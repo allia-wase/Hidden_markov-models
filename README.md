@@ -1,55 +1,54 @@
 # Human Activity Recognition with a Hidden Markov Model
 
-This project infers whether a person is **standing, walking, jumping or still** from smartphone accelerometer and gyroscope data. It uses a Gaussian Hidden Markov Model implemented from scratch in numpy, covering forward–backward, Baum–Welch and Viterbi.
+I recorded my own phone data for four activities (standing, walking, jumping and still) and built a Gaussian Hidden Markov Model from scratch in numpy to recognise them. The implementation includes forward-backward, Baum-Welch and Viterbi. On three unseen test sessions the model labels 92.6% of windows correctly.
 
 ## Repository layout
 
 ```
 data/
-  raw_exports/       Sensor Logger zips as exported (input to prepare_data.py)
-  train/             labelled training CSVs: <name>_<activity>_<NN>.csv
-  test/              unseen test CSVs (never used for training)
-prepare_data.py      converts app exports into the CSV format below
+  train/             61 labelled training clips: alliane_<activity>_<NN>.csv
+  test/              3 continuous test sessions: alliane_mixed_<NN>.csv
+prepare_data.py      converts Sensor Logger exports into the CSV format below
 hmm_activity.ipynb   the full pipeline: preprocessing, features, HMM, evaluation
 report/
   figures/           figures saved by the notebook
 ```
 
+## Dataset
+
+All data was recorded on an iPhone 14 with Sensor Logger at 100 Hz. For standing, walking and jumping I held the phone flat with the screen up at waist level; for still it lay flat on a table.
+
+| Activity | Training clips | Training time | Test windows |
+|---|---|---|---|
+| Standing | 15 | 103.7 s | 29 |
+| Walking | 16 | 118.9 s | 33 |
+| Jumping | 15 | 98.1 s | 30 |
+| Still | 15 | 99.5 s | 29 |
+
+Every training clip is 5 to 10 s long and contains one activity. Each test session is a single recording of 44 to 46 s with all four activities back to back in a different order. The seconds spent moving between activities are labelled `transition` and are not scored.
+
 Every CSV has the columns `timestamp, acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z, activity`:
-- `timestamp` is in seconds
+- `timestamp` is in seconds (Unix time)
 - acceleration is in m/s² and includes gravity
 - the gyroscope is in rad/s
-- each file is stored at the phone's native sampling rate (the notebook resamples to 50 Hz)
+- files are stored at the native 100 Hz; the notebook resamples them to 50 Hz
 
-## Recording protocol
+## Results on unseen data
 
-1. In **Sensor Logger**, enable **Accelerometer**, **Gravity** and **Gyroscope**.
-2. Record the training clips, 5–10 s each, about 13 per activity, so that each activity totals at least 90 s:
-   - **standing**: phone held steady at waist level
-   - **walking**: steady pace, phone at waist level
-   - **jumping**: continuous jumps, phone at waist level
-   - **still**: phone flat on a table
-3. Record **2 or more test sessions** on a different day or in a different place. In each one, do all four activities back to back for about 10 s each, using a stopwatch, and note the order.
-4. Export each recording as a zip.
-5. Record one ~5 s video per activity showing your face and full body, phone in hand, in good light.
+| Activity | Sensitivity | Specificity |
+|---|---|---|
+| Standing | 0.759 | 1.000 |
+| Walking | 0.970 | 0.909 |
+| Jumping | 1.000 | 0.989 |
+| Still | 0.966 | 1.000 |
+
+Overall accuracy is 0.926. Every error falls at a change of activity, where a 2 s window covers the end of one activity and the start of the next.
 
 ## Running
 
 ```bash
 pip install -r requirements.txt
-```
-
-Put the exports into folders named by split, member and activity:
-
-```
-data/raw_exports/train/<name>/<activity>/<export>.zip     # activity = standing|walking|jumping|still
-data/raw_exports/test/<name>/mixed/<export>.zip           # continuous test session
-data/raw_exports/test/<name>/mixed/<export>.segments.txt  # "walking 10 20" per line (seconds)
-```
-
-Then run:
-
-```bash
-python prepare_data.py    # rebuilds data/train and data/test
 jupyter notebook hmm_activity.ipynb
 ```
+
+The notebook reads the CSVs in `data/` directly. To rebuild them from new Sensor Logger exports, put the zips in `data/raw_exports/` and run `python prepare_data.py`. That folder is not committed, and the docstring at the top of `prepare_data.py` explains how to lay it out.
