@@ -25,6 +25,15 @@ All data was recorded on an iPhone 14 with Sensor Logger at 100 Hz. For standing
 | Jumping | 15 | 98.1 s | 30 |
 | Still | 15 | 99.5 s | 29 |
 
+### Data collection videos
+
+| Activity | Video |
+|---|---|
+| Standing | [Watch](https://drive.google.com/file/d/1Hc-7JuFMNjDIyc8vTTDgJF645VrOVo9M/view?usp=drive_link) |
+| Walking | [Watch](https://drive.google.com/file/d/1VTWMarIPIKNewofSt5uE4qYsZ0iSnmiz/view?usp=drive_link) |
+| Jumping | [Watch](https://drive.google.com/file/d/1depReIVwLN4IAf_veE4kjWD8ZHYJcCQl/view?usp=drive_link) |
+| Still | [Watch](https://drive.google.com/file/d/1E6PHQBcCtrlErBuN93QFxcTyeGweL2In/view?usp=drive_link) |
+
 Every training clip is 5 to 10 s long and contains one activity. Each test session is a single recording of 44 to 46 s with all four activities back to back in a different order. The seconds spent moving between activities are labelled `transition` and are not scored.
 
 Every CSV has the columns `timestamp, acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z, activity`:
